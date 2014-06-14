@@ -26,7 +26,11 @@ var Game = {
 				var level = new Level();
 				var size = level.getSize();
 				this._switchLevel(level);
-                this.level.generate();
+                this.level.build();
+                this.level.setEntity(this.player, this.level.pickSpace());
+                for(var i = 0; i < 10; i++) {
+                    this.level.setEntity(new Being({ch:"e", fg:"#a00"}), this.level.pickSpace());
+                }
 
 				this.engine.start();
 			break;

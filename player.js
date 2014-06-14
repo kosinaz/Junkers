@@ -65,8 +65,11 @@ Player.prototype._handleKey = function(code) {
 		var dir = ROT.DIRS[8][direction];
 		var xy = this._xy.plus(new XY(dir[0], dir[1]));
 
-        if(this._level.getEntityAt(xy).getVisual().ch == "#") return false;
-		this._level.setEntity(this, xy); /* FIXME collision detection */
+        switch(this._level.getEntityAt(xy).getVisual().ch) {
+            case "#": return false;
+            case "e": Game.textBuffer.write("2 entities attack each other."); break;
+            default: this._level.setEntity(this, xy); /* FIXME collision detection */
+        }
 		return true;
 	}
 

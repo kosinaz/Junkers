@@ -41,11 +41,10 @@ Level.prototype.getBeings = function() {
 	return this._beings;
 }
 
-Level.prototype.generate = function() {
+Level.prototype.build = function() {
     var cellular = new ROT.Map.Cellular(this.getSize().x, this.getSize().y, {connected: true});
     cellular.randomize(0.5);
     cellular.create(this._storeSpaces.bind(this));
-	this.setEntity(Game.player, this._emptySpaces.random());
 }
 
 Level.prototype._storeSpaces = function(x, y, value) {
@@ -54,4 +53,8 @@ Level.prototype._storeSpaces = function(x, y, value) {
     this._map[xy] = new Entity({ch:".", fg:"#888", bg:null});
     this._emptySpaces.push(xy);
     Game.draw(xy);
+}
+
+Level.prototype.pickSpace = function() {
+    return this._emptySpaces.splice(ROT.RNG.getUniformInt(0, this._emptySpaces.length), 1)[0];
 }
