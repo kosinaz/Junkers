@@ -26,6 +26,7 @@ var Game = {
 				var level = new Level();
 				var size = level.getSize();
 				this._switchLevel(level);
+                this.level.generate();
 				this.level.setEntity(this.player, new XY(Math.round(size.x/2), Math.round(size.y/2)));
 
 				this.engine.start();

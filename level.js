@@ -39,3 +39,16 @@ Level.prototype.getBeings = function() {
 	/* FIXME list of all beings */
 	return this._beings;
 }
+
+Level.prototype.generate = function() {
+    var cellular = new ROT.Map.Cellular(this.getSize().x, this.getSize().y, {connected: true});
+    cellular.randomize(0.5);
+    cellular.create(this._saveWalls.bind(this));
+}
+
+Level.prototype._saveWalls = function(x, y, value) {
+    if(!value) return;
+    var xy = new XY(x, y);
+    this._map[xy] = new Entity({ch:"#", fg:"#444", bg:null});
+    Game.draw(xy);
+}
