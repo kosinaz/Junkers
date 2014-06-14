@@ -1,5 +1,5 @@
 var Player = function() {
-	Being.call(this, {ch:"@", fg:"#fff"});
+	Being.call(this, {ch:"@", d:"⇑⇗⇒⇘⇓⇙⇐⇖", fg:"#fff"});
 	
 	this._keys = {};
 	this._keys[ROT.VK_K] = 0;
@@ -67,8 +67,8 @@ Player.prototype._handleKey = function(code) {
 
         switch(this._level.getEntityAt(xy).getVisual().ch) {
             case "#": return false;
-            case "e": Game.textBuffer.write("2 entities attack each other."); break;
-            default: this._level.setEntity(this, xy); /* FIXME collision detection */
+            case "e": Game.textBuffer.write("The player attacks an entity."); xy = this._xy;
+            default: this._level.setEntity(this, xy, direction); /* FIXME collision detection */
         }
 		return true;
 	}

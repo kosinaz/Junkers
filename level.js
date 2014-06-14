@@ -14,7 +14,7 @@ Level.prototype.getSize = function() {
 	return this._size;
 }
 
-Level.prototype.setEntity = function(entity, xy) {
+Level.prototype.setEntity = function(entity, xy, direction) {
 	/* FIXME remove from old position, draw */
 	if (entity.getLevel() == this) {
 		var oldXY = entity.getXY();
@@ -26,9 +26,9 @@ Level.prototype.setEntity = function(entity, xy) {
 
 	/* FIXME set new position, draw */
 	this._beings[xy] = entity;
+    if(entity.getVisual().d) entity.setDir(direction);
 	if (Game.level == this) { 
 		Game.draw(xy); 
-		Game.textBuffer.write("An entity moves to " + xy + ".");
 	}
 }
 

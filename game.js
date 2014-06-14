@@ -17,7 +17,7 @@ var Game = {
 
 				this.scheduler = new ROT.Scheduler.Speed();
 				this.engine = new ROT.Engine(this.scheduler);
-				this.display = new ROT.Display({fontSize:16});
+				this.display = new ROT.Display({fontSize:16, fontFamily: "Arial"});
 				this.textBuffer = new TextBuffer(this.display);
 				document.body.appendChild(this.display.getContainer());
 				this.player = new Player();
@@ -29,7 +29,7 @@ var Game = {
                 this.level.build();
                 this.level.setEntity(this.player, this.level.pickSpace());
                 for(var i = 0; i < 10; i++) {
-                    this.level.setEntity(new Being({ch:"e", fg:"#a00"}), this.level.pickSpace());
+                    this.level.setEntity(new Being({ch:"e", d:"⇧⬀⇨⬂⇩⬃⇦⬁", fg:"#a00"}), this.level.pickSpace());
                 }
 
 				this.engine.start();
@@ -40,7 +40,7 @@ var Game = {
 	draw: function(xy) {
 		var entity = this.level.getEntityAt(xy);
 		var visual = entity.getVisual();
-		this.display.draw(xy.x, xy.y, visual.ch, visual.fg, visual.bg);
+        this.display.draw(xy.x, xy.y, visual.d ? visual.d.charAt(entity.getDir()) : visual.ch, visual.fg, visual.bg);
 	},
 	
 	over: function() {
