@@ -5,8 +5,9 @@ var Level = function() {
 	/* FIXME map data */
 	this._size = new XY(80, 25);
 	this._map = {};
+    this._emptySpaces = [];
 
-	this._empty = new Entity({ch:".", fg:"#888", bg:null});
+	this._wall = new Entity({ch:"#", fg:"#444", bg:null});
 }
 
 Level.prototype.getSize = function() {
@@ -32,7 +33,7 @@ Level.prototype.setEntity = function(entity, xy) {
 }
 
 Level.prototype.getEntityAt = function(xy) {
-	return this._beings[xy] || this._map[xy] || this._empty;
+	return this._beings[xy] || this._map[xy] || this._wall;
 }
 
 Level.prototype.getBeings = function() {
@@ -43,12 +44,14 @@ Level.prototype.getBeings = function() {
 Level.prototype.generate = function() {
     var cellular = new ROT.Map.Cellular(this.getSize().x, this.getSize().y, {connected: true});
     cellular.randomize(0.5);
-    cellular.create(this._saveWalls.bind(this));
+    cellular.create(this._storeSpaces.bind(this));
+	this.setEntity(Game.player, this._emptySpaces.random());
 }
 
-Level.prototype._saveWalls = function(x, y, value) {
-    if(!value) return;
+Level.prototype._storeSpaces = function(x, y, value) {
+    if(value) return;
     var xy = new XY(x, y);
-    this._map[xy] = new Entity({ch:"#", fg:"#444", bg:null});
+    this._map[xy] = new Entity({ch:".", fg:"#888", bg:null});
+    this._emptySpaces.push(xy);
     Game.draw(xy);
 }
