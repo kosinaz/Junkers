@@ -11,16 +11,6 @@ var Being = function (visual) {
 };
 Being.extend(Entity);
 
-Being.prototype.setDir = function (dir) {
-    "use strict";
-    this.dir = dir;
-};
-
-Being.prototype.getDir = function () {
-    "use strict";
-    return this.dir;
-};
-
 /**
  * Called by the Scheduler
  */
@@ -39,22 +29,9 @@ Being.prototype.damage = function (damage) {
 
 Being.prototype.act = function () {
     "use strict";
-    /* FIXME */
-    var direction = ROT.RNG.getUniformInt(0, 7),
-        dir = ROT.DIRS[8][direction],
-        xy = this.xy.plus(new XY(dir[0], dir[1]));
-
-    switch (this.level.getEntityAt(xy).getVisual().ch) {
-    case "#":
-    case "e":
-        break;
-    case "@":
-        Game.textBuffer.write("An entity attacks the player.");
-        xy = this.xy;
-        this.setDir(direction);
-        break;
-    default:
-        this.level.setEntity(this, xy, direction); /* FIXME collision detection */
+    this.dir = ROT.RNG.getUniformInt(0, 7);
+    if (ROT.RNG.getUniformInt(0, 1)) {
+        this.moveTo(this.xy.plus(new XY(ROT.DIRS[8][this.dir][0], ROT.DIRS[8][this.dir][1])));
     }
 };
 
@@ -73,7 +50,19 @@ Being.prototype.setPosition = function (xy, level) {
     return Entity.prototype.setPosition.call(this, xy, level);
 };
 
-Being.prototype.computeFOV = function (x, y, range, visibility) {
+Being.prototype.moveTo = function (xy) {
     "use strict";
-    this.fov.push(new XY(x, y));
+    if (this.level.beings.hasOwnProperty(xy)) {
+        Game.textBuffer.write("An entity attacks.");
+    } else if (this.level.map.hasOwnProperty(xy)) {
+        this.level.setEntity(this, xy);
+    }
+};
+
+Being.prototype.computeFOV = function () {
+    "use strict";
+    this.fov = [];
+    Game.rsc.compute180(this.xy.x, this.xy.y, this.range, this.dir, function (x, y, range, visibility) {
+        this.fov.push(new XY(x, y));
+    }.bind(this));
 };

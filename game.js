@@ -14,35 +14,28 @@ var Game = {
 
     handleEvent: function (e) {
         "use strict";
-        var i, level;
+        var i;
         switch (e.type) {
         case "load":
             window.removeEventListener("load", this);
-
             this.scheduler = new ROT.Scheduler.Speed();
             this.engine = new ROT.Engine(this.scheduler);
-            this.display = new ROT.Display({
-                fontSize: 16
-            });
+            this.display = new ROT.Display();
             this.textBuffer = new TextBuffer(this.display);
             document.body.appendChild(this.display.getContainer());
             this.player = new Player();
-
-            /* FIXME build a level and position a player */
-            level = new Level();
-            this.switchLevel(level);
+            this.switchLevel(new Level());
             this.level.build();
-            this.level.setEntity(this.player, this.level.pickSpace());
-            this.player.setDir(ROT.RNG.getUniformInt(0, 7));
+            this.level.setEntity(this.player);
             for (i = 0; i < 10; i += 1) {
                 this.level.setEntity(new Being({
-                    ch: "e",
-                    d: "⇧⬀⇨⬂⇩⬃⇦⬁",
+                    ch: "⇧⬀⇨⬂⇩⬃⇦⬁",
                     fg: "#a00"
-                }), this.level.pickSpace());
+                }));
             }
-            this.rsc = new ROT.FOV.RecursiveShadowcasting(this.lightPasses.bind(this));
-
+            this.rsc = new ROT.FOV.RecursiveShadowcasting(function (x, y) {
+                return this.level.map.hasOwnProperty(new XY(x, y));
+            }.bind(this));
             this.engine.start();
             break;
         }
@@ -50,9 +43,8 @@ var Game = {
 
     draw: function (xy) {
         "use strict";
-        var entity = this.level.getEntityAt(xy),
-            visual = entity.getVisual();
-        this.display.draw(xy.x, xy.y, visual.d ? visual.d.charAt(entity.getDir()) : visual.ch, visual.fg, visual.bg);
+        var e = this.level.getEntityAt(xy);
+        this.display.draw(xy.x, xy.y, e.visual.ch.charAt(e.dir), e.visual.fg, e.visual.bg);
     },
 
     over: function () {
@@ -67,7 +59,7 @@ var Game = {
         this.scheduler.clear();
 
         this.level = level;
-        var size = this.level.getSize(),
+        var size = this.level.size,
             bufferSize = 3,
             beings,
             p;
@@ -83,17 +75,12 @@ var Game = {
         this.textBuffer.clear();
 
         /* add new beings to the scheduler */
-        beings = this.level.getBeings();
+        beings = this.level.beings;
         for (p in beings) {
             if (beings.hasOwnProperty(p)) {
                 this.scheduler.add(beings[p], true);
             }
         }
-    },
-
-    lightPasses: function (x, y) {
-        "use strict";
-        return this.level.getEntityAt(new XY(x, y)).getVisual().ch !== "#";
     }
 };
 

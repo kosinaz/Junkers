@@ -2,11 +2,9 @@
 var Player = function () {
     "use strict";
     Being.call(this, {
-        ch: "@",
-        d: "⇑⇗⇒⇘⇓⇙⇐⇖",
+        ch: "⇑⇗⇒⇘⇓⇙⇐⇖",
         fg: "#fff"
     });
-
     this.keys = {};
     this.keys[ROT.VK_K] = 0;
     this.keys[ROT.VK_UP] = 0;
@@ -37,12 +35,13 @@ Player.extend(Being);
 
 Player.prototype.act = function () {
     "use strict";
-    var i;
+    var p;
     Game.display.clear();
-    this.fov = [];
-    Game.rsc.compute180(this.xy.x, this.xy.y, this.range, this.dir, this.computeFOV.bind(this));
-    for (i = 0; i < this.fov.length; i += 1) {
-        Game.draw(this.fov[i]);
+    this.computeFOV();
+    for (p in this.fov) {
+        if (this.fov.hasOwnProperty(p)) {
+            Game.draw(this.fov[p]);
+        }
     }
     Game.textBuffer.flush();
     Game.engine.lock();
@@ -70,27 +69,8 @@ Player.prototype.handleKey = function (code) {
     "use strict";
     if (this.keys.hasOwnProperty(code)) {
         Game.textBuffer.clear();
-
-        var direction = this.keys[code],
-            dir = ROT.DIRS[8][direction],
-            xy = this.xy.plus(new XY(dir[0], dir[1]));
-
-        if (direction === -1) { /* noop */
-            /* FIXME show something? */
-            return true;
-        }
-
-        switch (this.level.getEntityAt(xy).getVisual().ch) {
-        case "#":
-            return false;
-        case "e":
-            Game.textBuffer.write("The player attacks an entity.");
-            xy = this.xy;
-            this.dir = direction;
-            break;
-        default:
-            this.level.setEntity(this, xy, direction); /* FIXME collision detection */
-        }
+        this.dir = this.keys[code];
+        this.moveTo(this.xy.plus(new XY(ROT.DIRS[8][this.dir][0], ROT.DIRS[8][this.dir][1])));
         return true;
     }
 
