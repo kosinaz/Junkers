@@ -1,39 +1,51 @@
+/*global XY*/
 var TextBuffer = function () {
-    this._data = [];
-    this._options = {
+    "use strict";
+    this.data = [];
+    this.options = {
         display: null,
         position: new XY(),
         size: new XY()
-    }
-}
+    };
+};
 
 TextBuffer.prototype.configure = function (options) {
-    for (var p in options) {
-        this._options[p] = options[p];
+    "use strict";
+    var p;
+    for (p in options) {
+        if (options.hasOwnProperty(p)) {
+            this.options[p] = options[p];
+        }
     }
-}
+};
 
 TextBuffer.prototype.clear = function () {
-    this._data = [];
-}
+    "use strict";
+    this.data = [];
+};
 
 TextBuffer.prototype.write = function (text) {
-    this._data.push(text);
-}
+    "use strict";
+    this.data.push(text);
+};
 
 TextBuffer.prototype.flush = function () {
-    var o = this._options;
-    var d = o.display;
-    var pos = o.position;
-    var size = o.size;
+    "use strict";
+    var o = this.options,
+        d = o.display,
+        pos = o.position,
+        size = o.size,
+        i,
+        j,
+        text;
 
     /* clear */
-    for (var i = 0; i < size.x; i++) {
-        for (var j = 0; j < size.y; j++) {
+    for (i = 0; i < size.x; i += 1) {
+        for (j = 0; j < size.y; j += 1) {
             d.draw(pos.x + i, pos.y + j);
         }
     }
 
-    var text = this._data.join(" ");
+    text = this.data.join(" ");
     d.drawText(pos.x, pos.y, text, size.x);
-}
+};

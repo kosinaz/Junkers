@@ -1,23 +1,28 @@
 var Entity = function (visual) {
-    this._visual = visual;
-    this._xy = null;
-    this._level = null;
-}
+    "use strict";
+    this.visual = visual;
+    this.xy = null;
+    this.level = null;
+};
 
 Entity.prototype.getVisual = function () {
-    return this._visual;
-}
+    "use strict";
+    return this.visual;
+};
 
 Entity.prototype.getXY = function () {
-    return this._xy;
-}
+    "use strict";
+    return this.xy;
+};
 
 Entity.prototype.getLevel = function () {
-    return this._level;
-}
+    "use strict";
+    return this.level;
+};
 
 Entity.prototype.setPosition = function (xy, level) {
-    this._xy = xy;
-    this._level = level;
+    "use strict";
+    this.xy = xy;
+    this.level = level;
     return this;
-}
+};

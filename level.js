@@ -1,64 +1,77 @@
+/*global XY, Entity, ROT*/
 var Level = function () {
+    "use strict";
     /* FIXME data structure for storing entities */
-    this._beings = {};
+    this.beings = {};
 
     /* FIXME map data */
-    this._size = new XY(80, 25);
-    this._map = {};
-    this._emptySpaces = [];
+    this.size = new XY(80, 25);
+    this.map = {};
+    this.emptySpaces = [];
 
-    this._wall = new Entity({
+    this.wall = new Entity({
         ch: "#",
         fg: "#444",
         bg: null
     });
-}
+};
 
 Level.prototype.getSize = function () {
-    return this._size;
-}
+    "use strict";
+    return this.size;
+};
 
 Level.prototype.setEntity = function (entity, xy, direction) {
+    "use strict";
     /* FIXME remove from old position, draw */
-    if (entity.getLevel() == this) {
-        delete this._beings[entity.getXY()];
+    if (entity.getLevel() === this) {
+        delete this.beings[entity.getXY()];
     }
 
     entity.setPosition(xy, this); /* propagate position data to the entity itself */
 
     /* FIXME set new position, draw */
-    this._beings[xy] = entity;
-    if (entity.getVisual().d) entity.setDir(direction);
-}
+    this.beings[xy] = entity;
+    if (entity.getVisual().d) {
+        entity.setDir(direction);
+    }
+};
 
 Level.prototype.getEntityAt = function (xy) {
-    return this._beings[xy] || this._map[xy] || this._wall;
-}
+    "use strict";
+    return this.beings[xy] || this.map[xy] || this.wall;
+};
 
 Level.prototype.getBeings = function () {
+    "use strict";
     /* FIXME list of all beings */
-    return this._beings;
-}
+    return this.beings;
+};
 
 Level.prototype.build = function () {
+    "use strict";
     var cellular = new ROT.Map.Cellular(this.getSize().x, this.getSize().y, {
         connected: true
     });
     cellular.randomize(0.5);
-    cellular.create(this._storeSpaces.bind(this));
-}
+    cellular.create(this.storeSpaces.bind(this));
+};
 
-Level.prototype._storeSpaces = function (x, y, value) {
-    if (value) return;
+Level.prototype.storeSpaces = function (x, y, value) {
+    "use strict";
+    if (value) {
+        return;
+    }
     var xy = new XY(x, y);
-    this._map[xy] = new Entity({
+    this.map[xy] = new Entity({
         ch: ".",
         fg: "#888",
         bg: null
     });
-    this._emptySpaces.push(xy);
-}
+    this.emptySpaces.push(xy);
+};
 
 Level.prototype.pickSpace = function () {
-    return this._emptySpaces.splice(ROT.RNG.getUniformInt(0, this._emptySpaces.length), 1)[0];
-}
+    "use strict";
+    return this.emptySpaces.splice(ROT.RNG.getUniformInt(0, this.emptySpaces.length), 1)[0];
+};

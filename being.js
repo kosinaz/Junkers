@@ -1,67 +1,79 @@
+/*global Entity, ROT, XY, Game*/
 var Being = function (visual) {
+    "use strict";
     Entity.call(this, visual);
 
-    this._dir = 0;
-    this._range = 10;
-    this._speed = 100;
-    this._hp = 10;
-    this._fov = [];
-}
+    this.dir = 0;
+    this.range = 10;
+    this.speed = 100;
+    this.hp = 10;
+    this.fov = [];
+};
 Being.extend(Entity);
 
 Being.prototype.setDir = function (dir) {
-    this._dir = dir;
-}
+    "use strict";
+    this.dir = dir;
+};
 
 Being.prototype.getDir = function () {
-    return this._dir;
-}
+    "use strict";
+    return this.dir;
+};
 
 /**
  * Called by the Scheduler
  */
 Being.prototype.getSpeed = function () {
-    return this._speed;
-}
+    "use strict";
+    return this.speed;
+};
 
 Being.prototype.damage = function (damage) {
-    this._hp -= damage;
-    if (this._hp <= 0) {
+    "use strict";
+    this.hp -= damage;
+    if (this.hp <= 0) {
         this.die();
     }
-}
+};
 
 Being.prototype.act = function () {
+    "use strict";
     /* FIXME */
-    var direction = ROT.RNG.getUniformInt(0, 7);
-    var dir = ROT.DIRS[8][direction];
-    var xy = this._xy.plus(new XY(dir[0], dir[1]));
+    var direction = ROT.RNG.getUniformInt(0, 7),
+        dir = ROT.DIRS[8][direction],
+        xy = this.xy.plus(new XY(dir[0], dir[1]));
 
-    switch (this._level.getEntityAt(xy).getVisual().ch) {
+    switch (this.level.getEntityAt(xy).getVisual().ch) {
     case "#":
     case "e":
         break;
     case "@":
         Game.textBuffer.write("An entity attacks the player.");
-        xy = this._xy;
+        xy = this.xy;
+        this.setDir(direction);
+        break;
     default:
-        this._level.setEntity(this, xy, direction); /* FIXME collision detection */
+        this.level.setEntity(this, xy, direction); /* FIXME collision detection */
     }
-}
+};
 
 Being.prototype.die = function () {
+    "use strict";
     Game.scheduler.remove(this);
-}
+};
 
 Being.prototype.setPosition = function (xy, level) {
+    "use strict";
     /* came to a currently active level; add self to the scheduler */
-    if (level != this._level && level == Game.level) {
+    if (level !== this.level && level === Game.level) {
         Game.scheduler.add(this, true);
     }
 
     return Entity.prototype.setPosition.call(this, xy, level);
-}
+};
 
-Being.prototype._computeFOV = function (x, y, range, visibility) {
-    this._fov.push(new XY(x, y));
-}
+Being.prototype.computeFOV = function (x, y, range, visibility) {
+    "use strict";
+    this.fov.push(new XY(x, y));
+};
