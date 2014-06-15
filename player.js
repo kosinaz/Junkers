@@ -3,7 +3,8 @@ var Player = function () {
     "use strict";
     Being.call(this, {
         ch: "⇑⇗⇒⇘⇓⇙⇐⇖",
-        fg: "#fff"
+        fg: "#fff",
+        bg: "#000"
     });
     this.keys = {};
     this.keys[ROT.VK_K] = 0;
@@ -38,9 +39,16 @@ Player.prototype.act = function () {
     var p;
     Game.display.clear();
     this.computeFOV();
+    for (p in this.minfov) {
+        if (this.minfov.hasOwnProperty(p)) {
+            Game.draw(this.minfov[p]);
+        }
+    }
     for (p in this.fov) {
         if (this.fov.hasOwnProperty(p)) {
-            Game.draw(this.fov[p]);
+            if (Game.light.hasOwnProperty(this.fov[p])) {
+                Game.draw(this.fov[p]);
+            }
         }
     }
     Game.textBuffer.flush();

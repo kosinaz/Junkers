@@ -11,7 +11,8 @@ var Level = function () {
 
     this.wall = new Entity({
         ch: "#",
-        fg: "#444"
+        fg: "#444",
+        bg: "#000"
     });
 };
 
@@ -57,7 +58,7 @@ Level.prototype.build = function () {
         var xy = new XY(x, y);
         this.map[xy] = new Entity({
             ch: ".",
-            fg: "#888"
+            fg: "#fff"
         });
         this.emptySpaces.push(xy);
     }.bind(this));

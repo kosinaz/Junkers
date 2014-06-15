@@ -14,7 +14,7 @@ var Game = {
 
     handleEvent: function (e) {
         "use strict";
-        var i;
+        var i, xy;
         switch (e.type) {
         case "load":
             window.removeEventListener("load", this);
@@ -30,11 +30,35 @@ var Game = {
             for (i = 0; i < 10; i += 1) {
                 this.level.setEntity(new Being({
                     ch: "⇧⬀⇨⬂⇩⬃⇦⬁",
-                    fg: "#a00"
+                    fg: "#f00",
+                    bg: "#000"
                 }));
             }
             this.rsc = new ROT.FOV.RecursiveShadowcasting(function (x, y) {
                 return this.level.map.hasOwnProperty(new XY(x, y));
+            }.bind(this));
+            this.lightning = new ROT.Lighting(function (x, y) {
+                return (this.level.map.hasOwnProperty(new XY(x, y)) ? 0.1 : 0);
+            }.bind(this), {
+                range: 10,
+                passes: 2
+            });
+            this.lightning.setFOV(this.rsc);
+            for (i = 0; i < 10; i += 1) {
+                xy = this.level.emptySpaces.splice(ROT.RNG.getUniformInt(0, this.level.emptySpaces.length), 1)[0];
+                this.lightning.setLight(xy.x, xy.y, [
+                    ROT.RNG.getUniformInt(0, 2) * 127,
+                    ROT.RNG.getUniformInt(0, 2) * 127,
+                    ROT.RNG.getUniformInt(0, 2) * 127
+                ]);
+            }
+            this.light = {};
+            this.lightning.compute(function (x, y, color) {
+                this.light[new XY(x, y)] = ROT.Color.toRGB([
+                    Math.min(color[0], 127),
+                    Math.min(color[1], 127),
+                    Math.min(color[2], 127)
+                ]);
             }.bind(this));
             this.engine.start();
             break;
@@ -43,8 +67,9 @@ var Game = {
 
     draw: function (xy) {
         "use strict";
-        var e = this.level.getEntityAt(xy);
-        this.display.draw(xy.x, xy.y, e.visual.ch.charAt(e.dir), e.visual.fg, e.visual.bg);
+        var e = this.level.getEntityAt(xy),
+            bg = e.visual.bg || this.light[xy];
+        this.display.draw(xy.x, xy.y, e.visual.ch.charAt(e.dir), e.visual.fg, bg);
     },
 
     over: function () {
