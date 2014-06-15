@@ -34,7 +34,12 @@ var Player = function () {
 Player.extend(Being);
 
 Player.prototype.act = function () {
-    Game.textBuffer.write("It is your turn, press any relevant key.");
+    Game.display.clear();
+    this._fov = [];
+    Game.rsc.compute180(this._xy.x, this._xy.y, this._range, this._dir, this._computeFOV.bind(this));
+    for (var i = 0; i < this._fov.length; i++) {
+        Game.draw(this._fov[i]);
+    }
     Game.textBuffer.flush();
     Game.engine.lock();
     window.addEventListener("keydown", this);

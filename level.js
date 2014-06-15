@@ -21,11 +21,7 @@ Level.prototype.getSize = function () {
 Level.prototype.setEntity = function (entity, xy, direction) {
     /* FIXME remove from old position, draw */
     if (entity.getLevel() == this) {
-        var oldXY = entity.getXY();
-        delete this._beings[oldXY];
-        if (Game.level == this) {
-            Game.draw(oldXY);
-        }
+        delete this._beings[entity.getXY()];
     }
 
     entity.setPosition(xy, this); /* propagate position data to the entity itself */
@@ -33,9 +29,6 @@ Level.prototype.setEntity = function (entity, xy, direction) {
     /* FIXME set new position, draw */
     this._beings[xy] = entity;
     if (entity.getVisual().d) entity.setDir(direction);
-    if (Game.level == this) {
-        Game.draw(xy);
-    }
 }
 
 Level.prototype.getEntityAt = function (xy) {
@@ -64,7 +57,6 @@ Level.prototype._storeSpaces = function (x, y, value) {
         bg: null
     });
     this._emptySpaces.push(xy);
-    Game.draw(xy);
 }
 
 Level.prototype.pickSpace = function () {

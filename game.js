@@ -18,8 +18,7 @@ var Game = {
             this.scheduler = new ROT.Scheduler.Speed();
             this.engine = new ROT.Engine(this.scheduler);
             this.display = new ROT.Display({
-                fontSize: 16,
-                fontFamily: "Arial"
+                fontSize: 16
             });
             this.textBuffer = new TextBuffer(this.display);
             document.body.appendChild(this.display.getContainer());
@@ -31,6 +30,7 @@ var Game = {
             this._switchLevel(level);
             this.level.build();
             this.level.setEntity(this.player, this.level.pickSpace());
+            this.player.setDir(ROT.RNG.getUniformInt(0, 7));
             for (var i = 0; i < 10; i++) {
                 this.level.setEntity(new Being({
                     ch: "e",
@@ -38,7 +38,7 @@ var Game = {
                     fg: "#a00"
                 }), this.level.pickSpace());
             }
-            this.fov = new ROT.FOV.RecursiveShadowcasting(this._lightPasses);
+            this.rsc = new ROT.FOV.RecursiveShadowcasting(this._lightPasses.bind(this));
 
             this.engine.start();
             break;
@@ -75,21 +75,15 @@ var Game = {
         });
         this.textBuffer.clear();
 
-        /* FIXME draw a level */
-        var xy = new XY();
-        for (var i = 0; i < size.x; i++) {
-            xy.x = i;
-            for (var j = 0; j < size.y; j++) {
-                xy.y = j;
-                this.draw(xy);
-            }
-        }
-
         /* add new beings to the scheduler */
         var beings = this.level.getBeings();
         for (var p in beings) {
             this.scheduler.add(beings[p], true);
         }
+    },
+
+    _lightPasses: function (x, y) {
+        return this.level.getEntityAt(new XY(x, y)).getVisual().ch != "#";
     }
 }
 

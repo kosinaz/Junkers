@@ -2,8 +2,10 @@ var Being = function (visual) {
     Entity.call(this, visual);
 
     this._dir = 0;
+    this._range = 10;
     this._speed = 100;
     this._hp = 10;
+    this._fov = [];
 }
 Being.extend(Entity);
 
@@ -58,4 +60,8 @@ Being.prototype.setPosition = function (xy, level) {
     }
 
     return Entity.prototype.setPosition.call(this, xy, level);
+}
+
+Being.prototype._computeFOV = function (x, y, range, visibility) {
+    this._fov.push(new XY(x, y));
 }
