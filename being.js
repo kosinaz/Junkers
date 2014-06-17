@@ -8,7 +8,6 @@ var Being = function (visual) {
     this.speed = 100;
     this.hp = 10;
     this.fov = [];
-    this.minfov = [];
 };
 Being.extend(Entity);
 
@@ -64,10 +63,9 @@ Being.prototype.computeFOV = function () {
     "use strict";
     this.fov = [];
     Game.rsc.compute180(this.xy.x, this.xy.y, this.range, this.dir, function (x, y, range, visibility) {
-        this.fov.push(new XY(x, y));
-    }.bind(this));
-    this.minfov = [];
-    Game.rsc.compute180(this.xy.x, this.xy.y, 1, this.dir, function (x, y, range, visibility) {
-        this.minfov.push(new XY(x, y));
+        var xy = new XY(x, y);
+        if (Game.light.hasOwnProperty(xy) || this.xy.dist8(xy) < 2) {
+            this.fov.push(new XY(x, y));
+        }
     }.bind(this));
 };

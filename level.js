@@ -11,8 +11,7 @@ var Level = function () {
 
     this.wall = new Entity({
         ch: "#",
-        fg: "#444",
-        bg: "#000"
+        fg: [63, 63, 63]
     });
 };
 
@@ -23,7 +22,7 @@ Level.prototype.setEntity = function (entity, xy, dir) {
         delete this.beings[entity.xy];
     }
     if (xy === undefined) {
-        xy = this.emptySpaces.splice(ROT.RNG.getUniformInt(0, this.emptySpaces.length), 1)[0];
+        xy = this.pickXY();
     }
     if (dir === undefined) {
         dir = ROT.RNG.getUniformInt(0, 7);
@@ -58,8 +57,13 @@ Level.prototype.build = function () {
         var xy = new XY(x, y);
         this.map[xy] = new Entity({
             ch: ".",
-            fg: "#fff"
+            fg: [127, 127, 127]
         });
         this.emptySpaces.push(xy);
     }.bind(this));
+};
+
+Level.prototype.pickXY = function () {
+    "use strict";
+    return this.emptySpaces.splice(ROT.RNG.getUniformInt(0, this.emptySpaces.length), 1)[0];
 };
