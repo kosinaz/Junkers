@@ -44,3 +44,34 @@ XY.prototype.minus = function (xy) {
     "use strict";
     return new XY(this.x - xy.x, this.y - xy.y);
 };
+
+XY.prototype.dir8To = function (xy) {
+    "use strict";
+    if (this.x === xy.x) {
+        if (this.y > xy.y) {
+            return 0;
+        } else {
+            return 4;
+        }
+    }
+    if (this.y === xy.y) {
+        if (this.x < xy.x) {
+            return 2;
+        } else {
+            return 6;
+        }
+    }
+    if (this.x < xy.x) {
+        if (this.y > xy.y) {
+            return 1;
+        } else {
+            return 3;
+        }
+    } else {
+        if (this.y > xy.y) {
+            return 7;
+        } else {
+            return 5;
+        }
+    }
+};

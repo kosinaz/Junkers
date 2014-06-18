@@ -5,7 +5,7 @@ var Level = function () {
     this.beings = {};
 
     /* FIXME map data */
-    this.size = new XY(80, 25);
+    this.size = new XY(ROT.DEFAULT_WIDTH, ROT.DEFAULT_HEIGHT - 3);
     this.map = {};
     this.emptySpaces = [];
 
@@ -46,7 +46,7 @@ Level.prototype.getBeings = function () {
 
 Level.prototype.build = function () {
     "use strict";
-    var cellular = new ROT.Map.Cellular(this.size.x, this.size.y, {
+    var cellular = new ROT.Map.Cellular(this.size.x, this.size.y - 3, {
         connected: true
     });
     cellular.randomize(0.5);

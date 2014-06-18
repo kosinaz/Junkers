@@ -35,15 +35,13 @@ Player.extend(Being);
 
 Player.prototype.act = function () {
     "use strict";
-    var i;
+    this.fov = this.computeFOV();
     Game.display.clear();
-    this.computeFOV();
-    for (i = 0; i < this.fov.length; i += 1) {
-        Game.draw(this.fov[i]);
-    }
+    Game.draw(this.fov);
     Game.textBuffer.flush();
     Game.engine.lock();
     window.addEventListener("keydown", this);
+    window.addEventListener("click", this);
 };
 
 Player.prototype.die = function () {
@@ -54,10 +52,7 @@ Player.prototype.die = function () {
 
 Player.prototype.handleEvent = function (e) {
     "use strict";
-    var code = e.keyCode,
-        keyHandled = this.handleKey(e.keyCode);
-
-    if (keyHandled) {
+    if (this.handleKey(e.keyCode) || this.handleMouse(Game.display.eventToPosition(e))) {
         window.removeEventListener("keydown", this);
         Game.engine.unlock();
     }
@@ -67,10 +62,37 @@ Player.prototype.handleKey = function (code) {
     "use strict";
     if (this.keys.hasOwnProperty(code)) {
         Game.textBuffer.clear();
-        this.dir = this.keys[code];
+        if (this.dir !== this.keys[code]) {
+            this.dir = this.keys[code];
+            return true;
+        }
         this.moveTo(this.xy.plus(new XY(ROT.DIRS[8][this.dir][0], ROT.DIRS[8][this.dir][1])));
+        this.target = null;
         return true;
     }
 
     return false; /* unknown key */
+};
+
+Player.prototype.handleMouse = function (position) {
+    "use strict";
+    var i, astar;
+    this.target = new XY(position[0], position[1]);
+    this.path = [];
+    astar = new ROT.Path.AStar(this.target.x, this.target.y, function (x, y) {
+        return Game.level.map.hasOwnProperty(new XY(x, y));
+    }).compute(this.xy.x, this.xy.y, function (x, y) {
+        this.path.push(new XY(x, y));
+    }.bind(this));
+    for (i = 0; i < this.fov.length; i += 1) {
+        if (this.fov[i].is(this.path[this.path.length - 2])) {
+            if (this.dir !== this.xy.dir8To(this.target)) {
+                this.dir = this.xy.dir8To(this.target);
+                return true;
+            }
+            this.moveTo(this.path[1]);
+            return true;
+        }
+    }
+    return false; /* out of fov */
 };

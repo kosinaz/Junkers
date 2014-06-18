@@ -21,6 +21,7 @@ var Game = {
             this.scheduler = new ROT.Scheduler.Speed();
             this.engine = new ROT.Engine(this.scheduler);
             this.display = new ROT.Display();
+            this.display.getOptions().fontSize = this.display.computeFontSize(screen.availWidth, screen.availHeight);
             this.textBuffer = new TextBuffer(this.display);
             document.body.appendChild(this.display.getContainer());
             this.player = new Player();
@@ -66,10 +67,14 @@ var Game = {
 
     draw: function (xy) {
         "use strict";
-        var e = this.level.getEntityAt(xy),
-            bg = this.light[xy] || [0, 0, 0],
+        var i, e, bg, fg, p;
+        for (i = 0; i < xy.length; i += 1) {
+            e = this.level.getEntityAt(xy[i]);
+            bg = this.light[xy[i]] || [0, 0, 0];
             fg = ROT.Color.add(e.visual.fg, bg);
-        this.display.draw(xy.x, xy.y, e.visual.ch.charAt(e.dir), ROT.Color.toHex(fg), ROT.Color.toHex(bg));
+            p = this.player.target ? (this.player.target.is(xy[i]) ? "×" : "") : "";
+            this.display.draw(xy[i].x, xy[i].y, [e.visual.ch.charAt(e.dir), p], ROT.Color.toHex(fg), ROT.Color.toHex(bg));
+        }
     },
 
     over: function () {
@@ -108,5 +113,3 @@ var Game = {
         }
     }
 };
-
-Game.init();
