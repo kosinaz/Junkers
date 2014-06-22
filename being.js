@@ -1,7 +1,7 @@
 /*global Entity, ROT, XY, Game*/
-var Being = function (visual) {
+var Being = function (ch) {
     "use strict";
-    Entity.call(this, visual);
+    Entity.call(this, ch);
 
     this.dir = 0;
     this.range = 10;
@@ -11,6 +11,11 @@ var Being = function (visual) {
     this.target = null;
 };
 Being.extend(Entity);
+
+Being.prototype.getCh = function () {
+    "use strict";
+    return this.ch.charAt(this.dir);
+};
 
 /**
  * Called by the Scheduler
@@ -63,9 +68,9 @@ Being.prototype.moveTo = function (xy) {
 Being.prototype.computeFOV = function () {
     "use strict";
     var fov = [];
-    Game.rsc.compute180(this.xy.x, this.xy.y, this.range, this.dir, function (x, y, range, visibility) {
+    this.level.rsc.compute180(this.xy.x, this.xy.y, this.range, this.dir, function (x, y, range, visibility) {
         var xy = new XY(x, y);
-        if (Game.light.hasOwnProperty(xy) || this.xy.dist8(xy) < 2) {
+        if (this.level.light.hasOwnProperty(xy) || this.xy.dist8(xy) < 2) {
             fov.push(new XY(x, y));
         }
     }.bind(this));

@@ -1,10 +1,7 @@
 /*global Being, ROT, Game, XY*/
 var Player = function () {
     "use strict";
-    Being.call(this, {
-        ch: "⇑⇗⇒⇘⇓⇙⇐⇖",
-        fg: [127, 127, 127]
-    });
+    Being.call(this, "⇑⇗⇒⇘⇓⇙⇐⇖");
     this.keys = {};
     this.keys[ROT.VK_K] = 0;
     this.keys[ROT.VK_UP] = 0;
@@ -35,9 +32,12 @@ Player.extend(Being);
 
 Player.prototype.act = function () {
     "use strict";
+    var i;
     this.fov = this.computeFOV();
     Game.display.clear();
-    Game.draw(this.fov);
+    for (i = 0; i < this.fov.length; i += 1) {
+        this.level.draw(this.fov[i]);
+    }
     Game.textBuffer.flush();
     Game.engine.lock();
     window.addEventListener("keydown", this);
