@@ -1,22 +1,10 @@
 /*global XY*/
-var TextBuffer = function () {
+var TextBuffer = function (display, position, height) {
     "use strict";
     this.data = [];
-    this.options = {
-        display: null,
-        position: new XY(),
-        size: new XY()
-    };
-};
-
-TextBuffer.prototype.configure = function (options) {
-    "use strict";
-    var p;
-    for (p in options) {
-        if (options.hasOwnProperty(p)) {
-            this.options[p] = options[p];
-        }
-    }
+    this.display = display;
+    this.position = position;
+    this.height = height;
 };
 
 TextBuffer.prototype.clear = function () {
@@ -31,21 +19,12 @@ TextBuffer.prototype.write = function (text) {
 
 TextBuffer.prototype.flush = function () {
     "use strict";
-    var o = this.options,
-        d = o.display,
-        pos = o.position,
-        size = o.size,
-        i,
-        j,
-        text;
-
+    var i, j;
     /* clear */
-    for (i = 0; i < size.x; i += 1) {
-        for (j = 0; j < size.y; j += 1) {
-            d.draw(pos.x + i, pos.y + j);
+    for (i = 0; i < this.display.getOptions().width; i += 1) {
+        for (j = 0; j < this.height; j += 1) {
+            this.display.draw(i, this.position + j);
         }
     }
-
-    text = this.data.join(" ");
-    d.drawText(pos.x, pos.y, text, size.x);
+    this.display.drawText(0, this.position, this.data.join(" "));
 };

@@ -1,12 +1,12 @@
 /*global Game, XY, Entity, ROT*/
-var Level = function () {
+var Level = function (width, height) {
     "use strict";
     var i, xy, cellular, max;
     /* FIXME data structure for storing entities */
     this.beings = {};
 
     /* FIXME map data */
-    this.size = new XY(Game.display.getOptions().width, Game.display.getOptions().height);
+    this.size = new XY(width, height);
     this.map = {};
     this.visible = {};
     this.emptySpaces = [];
@@ -92,6 +92,11 @@ Level.prototype.setEntity = function (entity, xy, dir) {
     }
 };
 
+Level.prototype.pickXY = function () {
+    "use strict";
+    return this.emptySpaces.splice(ROT.RNG.getUniformInt(0, this.emptySpaces.length), 1)[0];
+};
+
 Level.prototype.getEntityAt = function (xy) {
     "use strict";
     return this.beings[xy] || this.map[xy] || this.wall;
@@ -112,11 +117,6 @@ Level.prototype.getBeings = function () {
     "use strict";
     /* FIXME list of all beings */
     return this.beings;
-};
-
-Level.prototype.pickXY = function () {
-    "use strict";
-    return this.emptySpaces.splice(ROT.RNG.getUniformInt(0, this.emptySpaces.length), 1)[0];
 };
 
 Level.prototype.draw = function (xy) {
