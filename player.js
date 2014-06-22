@@ -1,7 +1,7 @@
 /*global Being, ROT, Game, XY*/
-var Player = function () {
+var Player = function (ch) {
     "use strict";
-    Being.call(this, "⇑⇗⇒⇘⇓⇙⇐⇖");
+    Being.call(this, ch);
     this.keys = {};
     this.keys[ROT.VK_K] = 0;
     this.keys[ROT.VK_UP] = 0;
@@ -33,11 +33,22 @@ Player.extend(Being);
 Player.prototype.act = function () {
     "use strict";
     var i;
-    this.fov = this.computeFOV();
-    Game.display.clear();
-    for (i = 0; i < this.fov.length; i += 1) {
-        this.level.draw(this.fov[i]);
+    this.level.visible = this.computeFOV();
+    for (i in this.fov) {
+        if (this.fov.hasOwnProperty(i)) {
+            if (!this.level.visible.hasOwnProperty(i)) {
+                this.level.draw(this.fov[i]);
+            }
+        }
     }
+    for (i in this.level.visible) {
+        if (this.level.visible.hasOwnProperty(i)) {
+            if (!this.fov.hasOwnProperty(i)) {
+                this.level.draw(this.level.visible[i]);
+            }
+        }
+    }
+    this.fov = this.level.visible;
     Game.textBuffer.flush();
     Game.engine.lock();
     window.addEventListener("keydown", this);
@@ -54,6 +65,8 @@ Player.prototype.handleEvent = function (e) {
     "use strict";
     if (this.handleKey(e.keyCode) || this.handleMouse(Game.display.eventToPosition(e))) {
         window.removeEventListener("keydown", this);
+        window.removeEventListener("click", this);
+        Game.textBuffer.clear();
         Game.engine.unlock();
     }
 };
@@ -61,13 +74,7 @@ Player.prototype.handleEvent = function (e) {
 Player.prototype.handleKey = function (code) {
     "use strict";
     if (this.keys.hasOwnProperty(code)) {
-        Game.textBuffer.clear();
-        if (this.dir !== this.keys[code]) {
-            this.dir = this.keys[code];
-            return true;
-        }
-        this.moveTo(this.xy.plus(new XY(ROT.DIRS[8][this.dir][0], ROT.DIRS[8][this.dir][1])));
-        this.target = null;
+        this.level.setEntity(this, this.xy.plus(new XY(ROT.DIRS[8][this.keys[code]][0], ROT.DIRS[8][this.keys[code]][1])), this.keys[code]);
         return true;
     }
 
@@ -76,22 +83,24 @@ Player.prototype.handleKey = function (code) {
 
 Player.prototype.handleMouse = function (position) {
     "use strict";
-    var i, astar;
+    var i;
     this.target = new XY(position[0], position[1]);
     this.path = [];
-    astar = new ROT.Path.AStar(this.target.x, this.target.y, function (x, y) {
+    new ROT.Path.AStar(this.target.x, this.target.y, function (x, y) {
         return Game.level.map.hasOwnProperty(new XY(x, y));
     }).compute(this.xy.x, this.xy.y, function (x, y) {
         this.path.push(new XY(x, y));
     }.bind(this));
-    for (i = 0; i < this.fov.length; i += 1) {
-        if (this.fov[i].is(this.path[this.path.length - 2])) {
-            if (this.dir !== this.xy.dir8To(this.path[1])) {
-                this.dir = this.xy.dir8To(this.path[1]);
+    for (i in this.fov) {
+        if (this.fov.hasOwnProperty(i)) {
+            if (this.fov[i].is(this.path[this.path.length - 2])) {
+                if (this.dir !== this.xy.dir8To(this.path[1])) {
+                    this.dir = this.xy.dir8To(this.path[1]);
+                    return true;
+                }
+                this.moveTo(this.path[1]);
                 return true;
             }
-            this.moveTo(this.path[1]);
-            return true;
         }
     }
     return false; /* out of fov */

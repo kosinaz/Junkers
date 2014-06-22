@@ -7,7 +7,7 @@ var Being = function (ch) {
     this.range = 10;
     this.speed = 100;
     this.hp = 10;
-    this.fov = [];
+    this.fov = {};
     this.target = null;
 };
 Being.extend(Entity);
@@ -35,10 +35,8 @@ Being.prototype.damage = function (damage) {
 
 Being.prototype.act = function () {
     "use strict";
-    this.dir = ROT.RNG.getUniformInt(0, 7);
-    if (ROT.RNG.getUniformInt(0, 1)) {
-        this.moveTo(this.xy.plus(new XY(ROT.DIRS[8][this.dir][0], ROT.DIRS[8][this.dir][1])));
-    }
+    var dir = ROT.RNG.getUniformInt(0, 7);
+    this.level.setEntity(this, this.xy.plus(new XY(ROT.DIRS[8][dir][0], ROT.DIRS[8][dir][1])), dir);
 };
 
 Being.prototype.die = function () {
@@ -56,22 +54,13 @@ Being.prototype.setPosition = function (xy, level) {
     return Entity.prototype.setPosition.call(this, xy, level);
 };
 
-Being.prototype.moveTo = function (xy) {
-    "use strict";
-    if (this.level.beings.hasOwnProperty(xy)) {
-        Game.textBuffer.write("An entity attacks.");
-    } else if (this.level.map.hasOwnProperty(xy)) {
-        this.level.setEntity(this, xy);
-    }
-};
-
 Being.prototype.computeFOV = function () {
     "use strict";
-    var fov = [];
+    var fov = {};
     this.level.rsc.compute180(this.xy.x, this.xy.y, this.range, this.dir, function (x, y, range, visibility) {
         var xy = new XY(x, y);
         if (this.level.light.hasOwnProperty(xy) || this.xy.dist8(xy) < 2) {
-            fov.push(new XY(x, y));
+            fov[new XY(x, y)] = new XY(x, y);
         }
     }.bind(this));
     return fov;

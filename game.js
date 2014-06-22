@@ -1,11 +1,11 @@
 /*global ROT, TextBuffer, Player, Level, Being, XY*/
 var Game = {
+    display: null,
+    textBuffer: null,
+    level: null,
     scheduler: null,
     engine: null,
     player: null,
-    level: null,
-    display: null,
-    textBuffer: null,
 
     init: function () {
         "use strict";
@@ -14,17 +14,17 @@ var Game = {
 
     handleEvent: function (e) {
         "use strict";
-        var i, l, xy;
+        var i;
         switch (e.type) {
         case "load":
             window.removeEventListener("load", this);
+            this.display = new ROT.Display({width: 45, height: 20, fontFamily: "Arial"});
+            document.body.appendChild(this.display.getContainer());
+            this.display.getOptions().fontSize = this.display.computeFontSize(screen.availWidth, screen.availHeight);
+            this.textBuffer = new TextBuffer();
             this.scheduler = new ROT.Scheduler.Speed();
             this.engine = new ROT.Engine(this.scheduler);
-            this.display = new ROT.Display();
-            this.display.getOptions().fontSize = this.display.computeFontSize(screen.availWidth, screen.availHeight);
-            this.textBuffer = new TextBuffer(this.display);
-            document.body.appendChild(this.display.getContainer());
-            this.player = new Player();
+            this.player = new Player("⇑⇗⇒⇘⇓⇙⇐⇖");
             this.switchLevel(new Level());
             this.level.setEntity(this.player);
             for (i = 0; i < 10; i += 1) {
