@@ -1,18 +1,18 @@
 /*global Game, XY, Entity, ROT*/
 var Level = function () {
     "use strict";
-    var i, xy, cellular;
+    var i, xy, cellular, max;
     /* FIXME data structure for storing entities */
     this.beings = {};
-    this.visible = {};
 
     /* FIXME map data */
     this.size = new XY(Game.display.getOptions().width, Game.display.getOptions().height);
     this.map = {};
+    this.visible = {};
     this.emptySpaces = [];
 
     this.wall = new Entity("◼");
-    cellular = new ROT.Map.Cellular(this.size.x, this.size.y - 3, {
+    cellular = new ROT.Map.Cellular(this.size.x, this.size.y, {
         connected: true
     });
     cellular.randomize(0.5);
@@ -31,22 +31,27 @@ var Level = function () {
     this.lightning = new ROT.Lighting(function (x, y) {
         return (this.map.hasOwnProperty(new XY(x, y)) ? 0.1 : 0);
     }.bind(this), {
-        range: 10,
+        range: 5,
         passes: 2
     });
     this.lightning.setFOV(this.rsc);
     for (i = 0; i < 10; i += 1) {
         xy = this.pickXY();
+        this.map[xy] = new Entity("*");
         this.lightning.setLight(xy.x, xy.y, ROT.Color.fromString(["red", "blue", "yellow"].random()));
     }
     this.light = {};
+    max = 0;
     this.lightning.compute(function (x, y, color) {
-        this.light[new XY(x, y)] = [
-            Math.min(color[0], 127),
-            Math.min(color[1], 127),
-            Math.min(color[2], 127)
-        ];
+        this.light[new XY(x, y)] = color;
+        max = Math.max(color[0], Math.max(color[1], Math.max(color[2], max)));
     }.bind(this));
+    max = 255 * 127 / max;
+    for (xy in this.light) {
+        if (this.light.hasOwnProperty(xy)) {
+            this.light[xy] = ROT.Color.multiply(this.light[xy], [max, max, max]);
+        }
+    }
 };
 
 Level.prototype.setEntity = function (entity, xy, dir) {

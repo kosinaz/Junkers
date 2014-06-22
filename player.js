@@ -94,11 +94,7 @@ Player.prototype.handleMouse = function (position) {
     for (i in this.fov) {
         if (this.fov.hasOwnProperty(i)) {
             if (this.fov[i].is(this.path[this.path.length - 2])) {
-                if (this.dir !== this.xy.dir8To(this.path[1])) {
-                    this.dir = this.xy.dir8To(this.path[1]);
-                    return true;
-                }
-                this.moveTo(this.path[1]);
+                this.level.setEntity(this, this.path[1], this.xy.dir8To(this.path[1]));
                 return true;
             }
         }
