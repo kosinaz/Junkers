@@ -49,7 +49,7 @@ Player.prototype.act = function () {
     }
   }
   this.fov = this.level.visible;
-  GAME.textBuffer.flush();
+  GAME.text.flush();
   GAME.engine.lock();
   window.addEventListener("keydown", this);
   window.addEventListener("click", this);
@@ -66,7 +66,7 @@ Player.prototype.handleEvent = function (e) {
   if (this.handleKey(e.keyCode) || this.handleMouse(GAME.display.eventToPosition(e))) {
     window.removeEventListener("keydown", this);
     window.removeEventListener("click", this);
-    GAME.textBuffer.clear();
+    GAME.text.clear();
     GAME.engine.unlock();
   }
 };

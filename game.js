@@ -2,12 +2,12 @@
 var Game = function () {
   "use strict";
   this.display = null;
-  this.textBuffer = null;
+  this.text = null;
   this.level = null;
   this.scheduler = null;
   this.engine = null;
-  this.LEVEL_WIDTH = 45;
-  this.LEVEL_HEIGHT = 20;
+  this.WIDTH = 45;
+  this.HEIGHT = 20;
   this.TEXT_HEIGHT = 3;
 };
 
@@ -23,18 +23,21 @@ Game.prototype.handleEvent = function (e) {
   case "load":
     window.removeEventListener("load", this);
     this.display = new ROT.Display({
-      width: this.LEVEL_WIDTH,
-      height: this.LEVEL_HEIGHT + this.TEXT_HEIGHT,
+      width: this.WIDTH,
+      height: this.HEIGHT + this.TEXT_HEIGHT,
       fontFamily: "Arial"
     });
     document.body.appendChild(this.display.getContainer());
     this.display.setOptions({
-      fontSize: this.display.computeFontSize(screen.availWidth, screen.availHeight)
+      fontSize: this.display.computeFontSize(
+        screen.availWidth,
+        screen.availHeight
+      )
     });
-    this.textBuffer = new TextBuffer(this.display, this.LEVEL_HEIGHT, this.TEXT_HEIGHT);
+    this.text = new TextBuffer(this.display, this.HEIGHT, this.TEXT_HEIGHT);
     this.scheduler = new ROT.Scheduler.Speed();
     this.engine = new ROT.Engine(this.scheduler);
-    this.level = new Level(this.LEVEL_WIDTH, this.LEVEL_HEIGHT);
+    this.level = new Level(this.WIDTH, this.HEIGHT);
     this.level.setEntity(new Player("⇑⇗⇒⇘⇓⇙⇐⇖"));
     for (i = 0; i < 10; i += 1) {
       this.level.setEntity(new Being("⇧⬀⇨⬂⇩⬃⇦⬁"));

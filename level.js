@@ -73,7 +73,7 @@ Level.prototype.setEntity = function (entity, xy, dir) {
     } else if (!this.map.hasOwnProperty(xy)) {
       return;
     } else if (this.beings.hasOwnProperty(xy)) {
-      GAME.textBuffer.write("An entity attacks.");
+      GAME.text.write("An entity attacks.");
       return;
     } else {
       delete this.beings[entity.xy];
