@@ -1,4 +1,16 @@
-/*global ROT, TextBuffer, Player, Level, Being, XY*/
+/*global ROT, TextBuffer, Level, Player, Being*/
+
+/**
+ * @fileoverview The primary file of the game. Contains the Game object and its
+ * initialization, and calls all the other objects from their own files.
+ */
+
+/**
+ * The main class of the game. Holds the objects of its graphical display, its
+ * text window under it, its level data, its scheduler and engine. To start the
+ * game, the init function has to be called.
+ * @constructor
+ */
 var Game = function () {
   "use strict";
   this.display = null;
