@@ -37,7 +37,7 @@ var Level = function (width, height) {
   this.lightning.setFOV(this.rsc);
   for (i = 0; i < 10; i += 1) {
     xy = this.pickXY();
-    this.map[xy] = new Entity("*");
+    this.map[xy] = new Entity("☀");
     this.lightning.setLight(xy.x, xy.y, ROT.Color.fromString(["red", "blue", "yellow"].random()));
   }
   this.light = {};

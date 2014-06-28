@@ -39,7 +39,7 @@ Game.prototype.init = function () {
  * to full window. Creates the text area, the scheduler, the engine, the level.
  * Creates the player and the NPC-s, adds them to the scheduler, and finally
  * starts the engine.
- * @param {Event} e The load event.
+ * @param {Event} e The load or resize event.
  */
 Game.prototype.handleEvent = function (e) {
   "use strict";

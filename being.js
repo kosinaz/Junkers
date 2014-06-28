@@ -1,9 +1,11 @@
-/*global Entity, ROT, XY, GAME*/
+/*global Entity, ROT, XY*/
 var Being = function (ch, level, scheduler, xy, dir) {
   "use strict";
   Entity.call(this, ch);
 
   this.level = level;
+  this.scheduler = scheduler;
+  this.scheduler.add(this, true);
   this.xy = xy || level.pickXY();
   this.dir = dir || ROT.RNG.getUniformInt(0, 7);
   this.range = 10;
@@ -12,7 +14,6 @@ var Being = function (ch, level, scheduler, xy, dir) {
   this.fov = {};
   this.discovered = {};
   this.target = null;
-  scheduler.add(this, true);
 };
 Being.extend(Entity);
 
@@ -23,9 +24,6 @@ Being.prototype.getCh = function () {
 
 Being.prototype.setPosition = function (xy, level) {
   'use strict';
-  if (level !== this.level && level === GAME.level) {
-    GAME.scheduler.add(this, true);
-  }
   this.xy = xy;
   this.level = level || this.level;
   return this;
@@ -50,13 +48,13 @@ Being.prototype.damage = function (damage) {
 Being.prototype.act = function () {
   "use strict";
   if (!this.moveToTarget()) {
-    this.target = this.level.pickXY();
+    this.target = this.level.emptySpaces.random();
   }
 };
 
 Being.prototype.die = function () {
   "use strict";
-  GAME.scheduler.remove(this);
+  this.scheduler.remove(this);
 };
 
 Being.prototype.computeFOV = function () {
