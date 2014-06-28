@@ -63,17 +63,18 @@ Level.prototype.setBeing = function (being, xy, dir) {
     if (this.visible.hasOwnProperty(being.xy)) {
       this.draw(being.xy);
     }
-    return;
-  } else if (!this.map.hasOwnProperty(xy)) {
-    return;
-  } else if (this.beings.hasOwnProperty(xy)) {
+    return true;
+  }
+  if (!this.map.hasOwnProperty(xy)) {
+    return false;
+  }
+  if (this.beings.hasOwnProperty(xy)) {
     GAME.text.write("An entity attacks.");
-    return;
-  } else {
-    delete this.beings[being.xy];
-    if (this.visible.hasOwnProperty(being.xy)) {
-      this.draw(being.xy);
-    }
+    return true;
+  }
+  delete this.beings[being.xy];
+  if (this.visible.hasOwnProperty(being.xy)) {
+    this.draw(being.xy);
   }
   /* propagate position data to the entity itself */
   being.setPosition(xy, this);
@@ -84,6 +85,7 @@ Level.prototype.setBeing = function (being, xy, dir) {
   if (this.visible.hasOwnProperty(xy)) {
     this.draw(being.xy);
   }
+  return true;
 };
 
 Level.prototype.pickXY = function () {

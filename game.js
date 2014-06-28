@@ -19,7 +19,7 @@ var Game = function () {
   this.scheduler = null;
   this.engine = null;
   this.WIDTH = 45;
-  this.HEIGHT = 20;
+  this.HEIGHT = 22;
   this.TEXT_HEIGHT = 3;
 };
 

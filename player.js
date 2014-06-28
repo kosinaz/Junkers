@@ -27,6 +27,10 @@ var Player = function (ch, level, scheduler, xy, dir) {
   this.keys[ROT.VK_PERIOD] = -1;
   this.keys[ROT.VK_CLEAR] = -1;
   this.keys[ROT.VK_NUMPAD5] = -1;
+  this.mouseDown = false;
+  window.addEventListener("keydown", this);
+  window.addEventListener("mousedown", this);
+  window.addEventListener("mouseup", this);
 };
 Player.extend(Being);
 
@@ -51,8 +55,9 @@ Player.prototype.act = function () {
   this.fov = this.level.visible;
   GAME.text.flush();
   GAME.engine.lock();
-  window.addEventListener("keydown", this);
-  window.addEventListener("click", this);
+  if (this.mouseDown && this.target) {
+    setTimeout(this.moveToTargetAndUnlock.bind(this), 100);
+  }
 };
 
 Player.prototype.die = function () {
@@ -63,41 +68,32 @@ Player.prototype.die = function () {
 
 Player.prototype.handleEvent = function (e) {
   "use strict";
-  if (this.handleKey(e.keyCode) || this.handleMouse(GAME.display.eventToPosition(e))) {
-    window.removeEventListener("keydown", this);
-    window.removeEventListener("click", this);
+  switch (e.type) {
+  case "mouseup":
+    this.target = null;
+    this.mouseDown = false;
+    return;
+  case "mousedown":
+    this.target = new XY(
+      GAME.display.eventToPosition(e)[0],
+      GAME.display.eventToPosition(e)[1]
+    );
+    this.mouseDown = true;
+    break;
+  case "keydown":
+    this.target = this.xy.plus(new XY(
+      ROT.DIRS[8][this.keys[e.keyCode]][0],
+      ROT.DIRS[8][this.keys[e.keyCode]][1]
+    ));
+    break;
+  }
+  this.moveToTargetAndUnlock();
+};
+
+Player.prototype.moveToTargetAndUnlock = function () {
+  "use strict";
+  if (this.moveToTarget()) {
     GAME.text.clear();
     GAME.engine.unlock();
   }
-};
-
-Player.prototype.handleKey = function (code) {
-  "use strict";
-  if (this.keys.hasOwnProperty(code)) {
-    this.level.setBeing(this, this.xy.plus(new XY(ROT.DIRS[8][this.keys[code]][0], ROT.DIRS[8][this.keys[code]][1])), this.keys[code]);
-    return true;
-  }
-
-  return false; /* unknown key */
-};
-
-Player.prototype.handleMouse = function (position) {
-  "use strict";
-  var i;
-  this.target = new XY(position[0], position[1]);
-  this.path = [];
-  new ROT.Path.AStar(this.target.x, this.target.y, function (x, y) {
-    return GAME.level.map.hasOwnProperty(new XY(x, y));
-  }).compute(this.xy.x, this.xy.y, function (x, y) {
-    this.path.push(new XY(x, y));
-  }.bind(this));
-  for (i in this.fov) {
-    if (this.fov.hasOwnProperty(i)) {
-      if (this.fov[i].is(this.path[this.path.length - 2])) {
-        this.level.setBeing(this, this.path[1], this.xy.dir8To(this.path[1]));
-        return true;
-      }
-    }
-  }
-  return false; /* out of fov */
 };
