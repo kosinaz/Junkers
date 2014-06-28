@@ -1,20 +1,33 @@
 /*global Entity, ROT, XY, GAME*/
-var Being = function (ch) {
+var Being = function (ch, level, scheduler, xy, dir) {
   "use strict";
   Entity.call(this, ch);
 
-  this.dir = 0;
+  this.level = level;
+  this.xy = xy || level.pickXY();
+  this.dir = dir || ROT.RNG.getUniformInt(0, 7);
   this.range = 10;
   this.speed = 100;
   this.hp = 10;
   this.fov = {};
   this.target = null;
+  scheduler.add(this, true);
 };
 Being.extend(Entity);
 
 Being.prototype.getCh = function () {
   "use strict";
   return this.ch.charAt(this.dir);
+};
+
+Being.prototype.setPosition = function (xy, level) {
+  'use strict';
+  if (level !== this.level && level === GAME.level) {
+    GAME.scheduler.add(this, true);
+  }
+  this.xy = xy;
+  this.level = level || this.level;
+  return this;
 };
 
 /**
@@ -36,22 +49,12 @@ Being.prototype.damage = function (damage) {
 Being.prototype.act = function () {
   "use strict";
   var dir = ROT.RNG.getUniformInt(0, 7);
-  this.level.setEntity(this, this.xy.plus(new XY(ROT.DIRS[8][dir][0], ROT.DIRS[8][dir][1])), dir);
+  this.level.setBeing(this, this.xy.plus(new XY(ROT.DIRS[8][dir][0], ROT.DIRS[8][dir][1])), dir);
 };
 
 Being.prototype.die = function () {
   "use strict";
   GAME.scheduler.remove(this);
-};
-
-Being.prototype.setPosition = function (xy, level) {
-  "use strict";
-  /* came to a currently active level; add self to the scheduler */
-  if (level !== this.level && level === GAME.level) {
-    GAME.scheduler.add(this, true);
-  }
-
-  return Entity.prototype.setPosition.call(this, xy, level);
 };
 
 Being.prototype.computeFOV = function () {

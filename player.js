@@ -1,7 +1,7 @@
 /*global Being, ROT, GAME, XY*/
-var Player = function (ch) {
+var Player = function (ch, level, scheduler, xy, dir) {
   "use strict";
-  Being.call(this, ch);
+  Being.call(this, ch, level, scheduler, xy, dir);
   this.keys = {};
   this.keys[ROT.VK_K] = 0;
   this.keys[ROT.VK_UP] = 0;
@@ -74,7 +74,7 @@ Player.prototype.handleEvent = function (e) {
 Player.prototype.handleKey = function (code) {
   "use strict";
   if (this.keys.hasOwnProperty(code)) {
-    this.level.setEntity(this, this.xy.plus(new XY(ROT.DIRS[8][this.keys[code]][0], ROT.DIRS[8][this.keys[code]][1])), this.keys[code]);
+    this.level.setBeing(this, this.xy.plus(new XY(ROT.DIRS[8][this.keys[code]][0], ROT.DIRS[8][this.keys[code]][1])), this.keys[code]);
     return true;
   }
 
@@ -94,7 +94,7 @@ Player.prototype.handleMouse = function (position) {
   for (i in this.fov) {
     if (this.fov.hasOwnProperty(i)) {
       if (this.fov[i].is(this.path[this.path.length - 2])) {
-        this.level.setEntity(this, this.path[1], this.xy.dir8To(this.path[1]));
+        this.level.setBeing(this, this.path[1], this.xy.dir8To(this.path[1]));
         return true;
       }
     }

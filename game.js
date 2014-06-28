@@ -58,9 +58,9 @@ Game.prototype.handleEvent = function (e) {
     this.scheduler = new ROT.Scheduler.Speed();
     this.engine = new ROT.Engine(this.scheduler);
     this.level = new Level(this.WIDTH, this.HEIGHT);
-    this.level.setEntity(new Player("⇑⇗⇒⇘⇓⇙⇐⇖"));
+    this.level.setBeing(new Player("⇑⇗⇒⇘⇓⇙⇐⇖", this.level, this.scheduler));
     for (i = 0; i < 10; i += 1) {
-      this.level.setEntity(new Being("⇧⬀⇨⬂⇩⬃⇦⬁"));
+      this.level.setBeing(new Being("⇧⬀⇨⬂⇩⬃⇦⬁", this.level, this.scheduler));
     }
     for (i in this.level.beings) {
       if (this.level.beings.hasOwnProperty(i)) {

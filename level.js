@@ -11,7 +11,7 @@ var Level = function (width, height) {
   this.visible = {};
   this.emptySpaces = [];
 
-  this.wall = new Entity("◼");
+  this.wall = new Entity("◼", this);
   cellular = new ROT.Map.Cellular(this.size.x, this.size.y, {
     connected: true
   });
@@ -21,7 +21,7 @@ var Level = function (width, height) {
       return;
     }
     var xy = new XY(x, y);
-    this.map[xy] = new Entity("•");
+    this.map[xy] = new Entity("•", this);
     this.emptySpaces.push(xy);
   }.bind(this));
 
@@ -54,41 +54,35 @@ var Level = function (width, height) {
   }
 };
 
-Level.prototype.setEntity = function (entity, xy, dir) {
+Level.prototype.setBeing = function (being, xy, dir) {
   "use strict";
-  if (xy === undefined) {
-    xy = this.pickXY();
-  }
-  if (dir === undefined) {
-    entity.dir = ROT.RNG.getUniformInt(0, 7);
-  }
-  /* FIXME remove from old position, draw */
-  if (entity.level === this) {
-    if (entity.dir !== dir) {
-      entity.dir = dir;
-      if (this.visible.hasOwnProperty(entity.xy)) {
-        this.draw(entity.xy);
-      }
-      return;
-    } else if (!this.map.hasOwnProperty(xy)) {
-      return;
-    } else if (this.beings.hasOwnProperty(xy)) {
-      GAME.text.write("An entity attacks.");
-      return;
-    } else {
-      delete this.beings[entity.xy];
-      if (this.visible.hasOwnProperty(entity.xy)) {
-        this.draw(entity.xy);
-      }
+  xy = xy || being.xy;
+  dir = dir === undefined ? being.dir : dir;
+  if (being.dir !== dir) {
+    being.dir = dir;
+    if (this.visible.hasOwnProperty(being.xy)) {
+      this.draw(being.xy);
+    }
+    return;
+  } else if (!this.map.hasOwnProperty(xy)) {
+    return;
+  } else if (this.beings.hasOwnProperty(xy)) {
+    GAME.text.write("An entity attacks.");
+    return;
+  } else {
+    delete this.beings[being.xy];
+    if (this.visible.hasOwnProperty(being.xy)) {
+      this.draw(being.xy);
     }
   }
-  entity.setPosition(xy, this); /* propagate position data to the entity itself */
+  /* propagate position data to the entity itself */
+  being.setPosition(xy, this);
 
   /* FIXME set new position, draw */
-  this.beings[xy] = entity;
+  this.beings[xy] = being;
 
   if (this.visible.hasOwnProperty(xy)) {
-    this.draw(entity.xy);
+    this.draw(being.xy);
   }
 };
 
