@@ -122,8 +122,8 @@ Level.prototype.draw = function (xy) {
     bg = this.getBgAt(xy);
   if (!this.visible.hasOwnProperty(xy)) {
     e = this.map[xy] || this.wall;
-    fg = ROT.Color.hsl2rgb([ROT.Color.rgb2hsl(fg)[0], 0, ROT.Color.rgb2hsl(fg)[2] / 2]);
-    bg = ROT.Color.hsl2rgb([ROT.Color.rgb2hsl(bg)[0], 0, ROT.Color.rgb2hsl(bg)[2] / 2]);
+    fg = ROT.Color.hsl2rgb([ROT.Color.rgb2hsl(fg)[0], 0, ROT.Color.rgb2hsl(fg)[2] / 3]);
+    bg = ROT.Color.hsl2rgb([ROT.Color.rgb2hsl(bg)[0], 0, ROT.Color.rgb2hsl(bg)[2] / 3]);
   }
   GAME.display.draw(xy.x, xy.y, e.getCh(), ROT.Color.toHex(fg), ROT.Color.toHex(bg));
 };
